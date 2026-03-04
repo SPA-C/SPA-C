@@ -8,17 +8,18 @@ Clone this repo to your desired location :
 git clone https://forge.inrae.fr/dlscaff/dlscaff.git
 ```
 
-Download the apptainer image containing the environment to run the tool :
+Download the apptainer image containing the environment to run the tool (see its [Repo](https://forge.inrae.fr/dlscaff/env)) :
 ```shell
-apptainer pull DLScaff.sif oras://registry.forge.inrae.fr/dlscaff/env/dlscaff:latest
+apptainer pull dlscaff.sif oras://registry.forge.inrae.fr/dlscaff/env/dlscaff:latest
 ```
 
-Optionally dowload the apptainer container to preprocess your Hi-C reads :
+Optionally download the apptainer container to process your Hi-C reads into MCOOL files:
 > [!warning] ToDo
 
 ## Usage
 ### Preprocessing
-Use Juicer or ([Juicer.gz](https://forge.inrae.fr/alexis.mergez/juicer-gz.git)) to map and preprocess your Hi-C reads.
+Use [Juicer](https://github.com/aidenlab/juicer) or ([Juicer.gz](https://forge.inrae.fr/alexis.mergez/juicer-gz.git)) to map and preprocess your Hi-C 
+reads.
 For example: 
 ```shell
 juicer.sh \
@@ -49,7 +50,7 @@ touch restrc_cuts.bed dangling_seq.txt restrc_seq.txt
 hicBuildMatrix \
   -s merged_dedup.R1.bam merged_dedup.R2.bam \
   -o <assembly>.mcool \
-  --binSize 5000 1000000 \
+  --binSize 1000 5000 10000 25000 100000 500000 1000000 \
   -cs <input_assembly>.chrom.sizes \
   --threads $(nproc) \
   --QCfolder QC_folder \
@@ -60,12 +61,32 @@ hicBuildMatrix \
   --minMappingQuality 0
 ```
 
-We provide an Apptainer container which contains both Juicer.gz and HicExplorer.
-> [!warning] ToDo
-> 
+> [!note]
+> If you use our Apptainer image, run: `apptainer exec hic.sif hicBuildMatrix [...]` instead of `hicBuildMatrix [...]`.
 
-### Correcting and scaffolding the assembly
-Modify paths in the script run.sh according to your configuration and run it.
+### Correcting and scaffolding an assembly
+Modify paths in the script [run_DLScaff.sh](run_DLScaff.sh) according to your configuration and run it.
+
 
 ### Outputs
-> [!warning] ToDo
+DLScaff generates several outputs that can be used to understand the choices that have been made:
+- Misjoin detection in input's contigs:
+  - `chim_scores.json` gives the raw predictions of the model along the input contigs.
+  - `ctgs_parts.json` gives the raw decomposition of each input contigs into chimeric or non-chimeric regions.
+  - `ctgs_filtered_parts.json` gives the decomposition of each input contigs after having processed the chimeric 
+    regions into dedicated contigs or split chimeric regions in half.
+  - `nochim_ctgs.txt` lists all non-chimeric contigs as regions of the input's contigs.
+- Scaffolding of corrected contigs:
+  - `scaff_scores_<bin resolution>.json` gives the raw predictions of the model between contig's ends, for a given 
+    _bin resolution_.
+  - `scaff_net_<bin resolution>.json` gives the predictions of the model grouped by contig pairs and labeled 
+    following the orientation, for a given _bin resolution_.
+  - `scaff_net.json` gives the predictions of the model, averaged between available _bin resolutions_ and grouped by 
+    contig pairs.
+  - `filtered_scaff_net.json` and `filtered_scaff_net_<bin resolution>.json` are versions where low probability 
+    linkages were removed for easier understanding. **They serves for debug only and are not used in the pipeline.**
+  - `<ID>.gfa` is the scaffolding graph passed to [YaHS++](https://forge.inrae.fr/dlscaff/yahspp).
+  - `<ID>.out.agp` is the description of scaffolds arrangement made by [YaHS++](https://forge.inrae.fr/dlscaff/yahspp).
+  - `<ID>.out.fa` is the final scaffolded assembly.
+- Datasets:
+  - All HDF5 files are datasets used by DLScaff's model for prediction.
