@@ -13,8 +13,10 @@ Download the apptainer image containing the environment to run the tool (see its
 apptainer pull dlscaff.sif oras://registry.forge.inrae.fr/dlscaff/env/dlscaff:latest
 ```
 
-Optionally download the apptainer container to process your Hi-C reads into MCOOL files:
-> [!warning] ToDo
+Optionally, download the apptainer container to process your Hi-C reads into MCOOL files:
+```shell
+apptainer pull HiC.sif oras://registry.forge.inrae.fr/dlscaff/hic-env/hic-env:latest
+```
 
 ## Usage
 ### Preprocessing
