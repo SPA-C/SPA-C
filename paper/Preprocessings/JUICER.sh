@@ -10,7 +10,7 @@ module load bioinfo/bwa/0.7.19
 module load bioinfo/samtools/1.21
 module load containers/Apptainer/1.2.5
 
-apps="apptainer" # Path to apptainer images
+apps="apptainer" # Path to apptainer images folder
 SCRIPTS="juicer/CPU" # Path to Juicer CPU scripts
 BASE_DIR="datasets" # Directory containing all datasets
 
@@ -23,6 +23,9 @@ if [ ! -f "references/${ctg_file}.fa.chrom.sizes" ]; then
   samtools faidx references/${ctg_file}.fa
   cat references/${ctg_file}.fa.fai | cut -f1,2 > references/${ctg_file}.fa.chrom.sizes
 fi
+
+# Linking Juicer script directory
+ln -s $SCRIPTS scripts
 
 # Running Juicer
 if [ ! -f "aligned/merged_dedup.bam" ]; then

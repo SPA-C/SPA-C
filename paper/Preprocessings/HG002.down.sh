@@ -33,9 +33,6 @@ cat ${GENOME_ID}.ref.fna | \
 grep -E -A1 "MATERNAL" ${GENOME_ID}.ref.fna.formated > ${GENOME_ID}.fa
 rm ${GENOME_ID}.ref.fna.formated
 
-# Splitting in 10Mb contigs
-#ToDo
-
 # Preparing Juicer Template and launching it
 cd $MAIN_DIR
 cat ${BASE_DIR}/JUICER.sh | sed "s/ctg_id/${GENOME_ID}/g" > JUICER.sh

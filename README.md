@@ -64,7 +64,7 @@ hicBuildMatrix \
 ```
 
 > [!note]
-> If you use our Apptainer image, run: `apptainer exec hic.sif hicBuildMatrix [...]` instead of `hicBuildMatrix [...]`.
+> If you use our Apptainer image, run: `apptainer exec HiC.sif hicBuildMatrix [...]` instead of `hicBuildMatrix [...]`.
 
 ### Correcting and scaffolding an assembly
 Modify paths in the script [run_SPA-C.sh](run_SPA-C.sh) according to your configuration and run it.
