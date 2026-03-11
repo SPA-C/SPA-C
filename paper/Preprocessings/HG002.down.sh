@@ -9,6 +9,7 @@
 module load tools/aws/2.13.14
 
 GENOME_ID="HG002"
+SPA_dir="SPA-C" # Directory of the Git repo
 BASE_DIR="datasets" # Directory containing all datasets
 MAIN_DIR="${BASE_DIR}/${GENOME_ID}"
 HIC_DIR="${MAIN_DIR}/fastq"
@@ -35,5 +36,5 @@ rm ${GENOME_ID}.ref.fna.formated
 
 # Preparing Juicer Template and launching it
 cd $MAIN_DIR
-cat ${BASE_DIR}/JUICER.sh | sed "s/ctg_id/${GENOME_ID}/g" > JUICER.sh
+cat ${SPA_dir}/paper/Preprocessings/JUICER.sh | sed "s/ctg_id/${GENOME_ID}/g" > JUICER.sh
 sbatch JUICER.sh

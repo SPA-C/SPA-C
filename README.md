@@ -5,17 +5,17 @@ SPA-C is a CNN based tool to correct and scaffold assemblies.
 ## Installation
 Clone this repo to your desired location :
 ```shell
-git clone https://forge.inrae.fr/SPA-C/SPA-C.git
+git clone https://forge.inrae.fr/spa-c/SPA-C.git
 ```
 
 Download the apptainer image containing the environment to run the tool (see its [Repo](https://forge.inrae.fr/SPA-C/env)) :
 ```shell
-apptainer pull SPA-C.sif oras://registry.forge.inrae.fr/SPA-C/env/SPA-C:latest
+apptainer pull SPA-C.sif oras://registry.forge.inrae.fr/spa-c/env/spac:latest
 ```
 
 Optionally, download the apptainer container to process your Hi-C reads into MCOOL files:
 ```shell
-apptainer pull HiC.sif oras://registry.forge.inrae.fr/SPA-C/hic-env/hic-env:latest
+apptainer pull HiC.sif oras://registry.forge.inrae.fr/spa-c/hic-env/hic-env:latest
 ```
 
 ## Usage

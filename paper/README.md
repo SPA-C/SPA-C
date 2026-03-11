@@ -2,8 +2,7 @@
 
 This directory contains the scripts that have been used to process the datasets and produce the figures of the paper.
 
-> [!note] Since most of the scripts have been run on the Genobioinfo cluster, some tools that have been used were 
-> already installed and loaded using the `module load` command.
+> [!note] Since most of the scripts have been run on the Genobioinfo cluster, some tools that have been used were already installed and loaded using the `module load` command.
 
 ## Preprocessing
 ### Juicer
@@ -17,7 +16,7 @@ Then, to run `HicExplorer`, use the [HE.sh](Preprocessings/HE.sh) after tuning t
 ```shell
 # This snippet set the ctg_file variable
 SPA_dir="SPA-C" # Directory of the Git repo
-for dir in *.DToL HG002.B10M; do
+for dir in *.DToL HG002.B10M HG002 CHM13; do
   cat ${SPA_dir}/paper/Preprocessings/HE.sh | sed "s/<ID>/${dir}/g" > ${dir}/HE.sh
 done
 ```

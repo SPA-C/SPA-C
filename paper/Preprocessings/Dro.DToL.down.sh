@@ -7,6 +7,7 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 
 GENOME_ID="Dro.DToL"
+SPA_dir="SPA-C" # Directory of the Git repo
 BASE_DIR="datasets" # Directory containing all datasets
 MAIN_DIR="${BASE_DIR}/${GENOME_ID}"
 HIC_DIR="${MAIN_DIR}/fastq"
@@ -28,5 +29,5 @@ mv contigs.fasta ${GENOME_ID}.fa
 
 # Preparing Juicer Template and launching it
 cd $MAIN_DIR
-cat ${BASE_DIR}/JUICER.sh | sed "s/ctg_id/${GENOME_ID}/g" > JUICER.sh
+cat ${SPA_dir}/paper/Preprocessings/JUICER.sh | sed "s/ctg_id/${GENOME_ID}/g" > JUICER.sh
 sbatch JUICER.sh
