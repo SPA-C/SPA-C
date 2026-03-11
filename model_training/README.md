@@ -14,37 +14,37 @@ dir="${BASE_DIR}/${DS}" # Directory of CHM13 dataset
 # Inter only
 mkdir -p ${BASE_DIR}/${DS}.C2A/references
 $apps/HiC.sif python -u ${SPA_dir}/model_training/ChimericContigs.py \
-	--fasta ${dir}/references/${DS}.fa \
-	--out ${BASE_DIR}/${DS}.C2A/references/${DS}.C2A.fa \
-	--seed 42 \
-	--paf ${BASE_DIR}/${DS}.C2A/references/${DS}.C2A.paf \
-	--repetition 2000 \
-	--size 200000 \
-	--simple-names "C2A"
+  --fasta ${dir}/references/${DS}.fa \
+  --out ${BASE_DIR}/${DS}.C2A/references/${DS}.C2A.fa \
+  --seed 42 \
+  --paf ${BASE_DIR}/${DS}.C2A/references/${DS}.C2A.paf \
+  --repetition 2000 \
+  --size 200000 \
+  --simple-names "C2A"
 
 # Intra only
 mkdir -p ${BASE_DIR}/${DS}.C2B/references
 $apps/HiC.sif python -u ${SPA_dir}/model_training/ChimericContigs.py \
-	--fasta ${dir}/references/${DS}.fa \
-	--out ${BASE_DIR}/${DS}.C2B/references/${DS}.C2B.fa \
-	--seed 42 \
-	--paf ${BASE_DIR}/${DS}.C2B/references/${DS}.C2B.paf \
-	--repetition 2500 \
-	--size 200000 \
-	--intra \
-	--simple-names "C2B"
+  --fasta ${dir}/references/${DS}.fa \
+  --out ${BASE_DIR}/${DS}.C2B/references/${DS}.C2B.fa \
+  --seed 42 \
+  --paf ${BASE_DIR}/${DS}.C2B/references/${DS}.C2B.paf \
+  --repetition 2500 \
+  --size 200000 \
+  --intra \
+  --simple-names "C2B"
 
 # Inversions only
 mkdir -p ${BASE_DIR}/${DS}.C2C/references
 $apps/HiC.sif python -u ${SPA_dir}/model_training/ChimericContigs.py \
-	--fasta ${dir}/references/${DS}.fa \
-	--out ${BASE_DIR}/${DS}.C2C/references/${DS}.C2C.fa \
-	--seed 42 \
-	--paf ${BASE_DIR}/${DS}.C2C/references/${DS}.C2C.paf \
-	--repetition 2500 \
-	--size 200000 \
-	--inversion \
-	--simple-names "C2C"
+  --fasta ${dir}/references/${DS}.fa \
+  --out ${BASE_DIR}/${DS}.C2C/references/${DS}.C2C.fa \
+  --seed 42 \
+  --paf ${BASE_DIR}/${DS}.C2C/references/${DS}.C2C.paf \
+  --repetition 2500 \
+  --size 200000 \
+  --inversion \
+  --simple-names "C2C"
 ```
 
 Run JUICER and HicExplorer using both templates:
@@ -73,41 +73,41 @@ cd $BASE_DIR
 for dir in ${DS}.C2*; do
   # "Searching" breakpoints in chimera 
   $apps/HiC.sif python -u ${SPA_dir}/model_training/Search_BKP.py \
-      --paf ${dir}/references/${dir}.paf \
-      --output ${dir}/references/${dir}.bkp \
-      --skip-clustering \
-      --bkpDeadZone 0
+    --paf ${dir}/references/${dir}.paf \
+    --output ${dir}/references/${dir}.bkp \
+    --skip-clustering \
+    --bkpDeadZone 0
   
   # Creating the dataset
   mkdir ${dir}/SPA-C_ds
   $apps/HiC.sif python -u ${SPA_dir}/py_scripts/Cool2IntraM_FullMat.py \
-		--cool ${dir}/aligned/${dir}.JHE.mcool \
-		--image-size 10 \
-		--bin-size 5000 \
-		--breakpoint ${dir}/references/${dir}.bkp \
-		--only-negatives \
-		--output ${dir}/SPA-C_ds/${dir}.IntraFM.5K10S_Q0.hdf5 \
-		--name-table ${dir}/references/${dir}.conversion_table.txt \
-		--padding "-1"
+    --cool ${dir}/aligned/${dir}.JHE.mcool \
+    --image-size 10 \
+    --bin-size 5000 \
+    --breakpoint ${dir}/references/${dir}.bkp \
+    --only-negatives \
+    --output ${dir}/SPA-C_ds/${dir}.IntraFM.5K10S_Q0.hdf5 \
+    --name-table ${dir}/references/${dir}.conversion_table.txt \
+    --padding "-1"
 done
 
 dir="${DS}"
 mkdir -p ${dir}/SPA-C_ds/tmp
 $apps/HiC.sif python -u ${SPA_dir}/py_scripts/Cool2IntraM_FullMat.py \
-	--cool ${dir}/aligned/${dir}.JHE.mcool \
-	--image-size 10 \
-	--bin-size 5000 \
-	--output ${dir}/SPA-C_ds/${dir}.IntraFM.5K10S_Q0.hdf5
+  --cool ${dir}/aligned/${dir}.JHE.mcool \
+  --image-size 10 \
+  --bin-size 5000 \
+  --output ${dir}/SPA-C_ds/${dir}.IntraFM.5K10S_Q0.hdf5
 
 # Inter
 $apps/HiC.sif python -u ${SPA_dir}/py_scripts/Cool2InterM_FullMat.py \
-	--cool ${dir}/aligned/${dir}.JHE.mcool \
-	--image-size 10 \
-	--bin-size 5000 \
-	--steps 5 \
-	--threads 8 \
-	--output ${dir}/SPA-C_ds/${dir}.InterFM.5K10S_Q0.hdf5 \
-	--tmp-dir ${dir}/SPA-C_ds/tmp
+  --cool ${dir}/aligned/${dir}.JHE.mcool \
+  --image-size 10 \
+  --bin-size 5000 \
+  --steps 5 \
+  --threads 8 \
+  --output ${dir}/SPA-C_ds/${dir}.InterFM.5K10S_Q0.hdf5 \
+  --tmp-dir ${dir}/SPA-C_ds/tmp
 ```
 
 #### Downsampling inter-chromosome matrices
