@@ -339,7 +339,7 @@ class FocalLoss(nn.Module):
         # Reduction
         return loss.mean() if self.reduction == 'mean' else loss.sum()
 
-class DLScaff:
+class SPAC:
     def __init__(self, device, name, latent_width=64, input_shape=(1, 20, 20), weights=None):
         self.input_shape = input_shape
         self.latent_width = latent_width

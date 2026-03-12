@@ -118,13 +118,37 @@ apps="apptainer"
 SPA_dir="SPA-C"
 
 cd SPA_dir/py_scripts
-$apps/SPA-C.sif python
+apptainer exec --cleanenv $apps/SPA-C.sif python
 ```
 And then run these python commands:
 ```python
 dir="datasets/CHM13/SPA-C_ds"
+
+import os
+from SPAC_Dataset import dataset
+inter = dataset(os.path.join(dir, "CHM13.InterFM.5K10S_Q0.hdf5"), bin_size=5000, image_size=10, skip_check=True)
+inter.equalize(clip_value=1e4)
+inter.save(savedir=os.path.join(dir, "CHM13.InterFM.5K10S_Q0.EQ.hdf5"))
 ```
-#ToDo
+
+#### Merging subsets
+```shell
+apps="apptainer"
+SPA_dir="SPA-C"
+dir="datasets"
+DS="CHM13"
+
+cd $dir
+mkdir ${DS}.DS
+apptainer exec --cleanenv $apps/SPA-C.sif python ${SPA_dir}/model_training/Multi2One.py \
+    --dataset ${DS}/SPA-C_ds/${DS}.IntraFM.5K10S_Q0.hdf5 \
+    ${DS}.C2A/SPA-C_ds/${DS}.C2A.IntraFM.5K10S_Q0.hdf5 \
+    ${DS}.C2B/SPA-C_ds/${DS}.C2B.IntraFM.5K10S_Q0.hdf5 \
+    ${DS}.C2C/SPA-C_ds/${DS}.C2C.IntraFM.5K10S_Q0.hdf5 \
+    ${DS}/SPA-C_ds/${DS}.IntraFM.5K10S_Q0.EQ.hdf5 \
+    --output ${DS}.DS/${DS}.DS_5K10S_Q0.hdf5 \
+    --name ${DS}.DS_5K10S_Q0.raw
+```
 
 ### HG002
 Replace the `DS` variable to `HG002.H1` in each [CHM13](#chm13) code snippets. 

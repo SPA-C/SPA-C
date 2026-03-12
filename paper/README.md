@@ -104,3 +104,13 @@ for dir in *.DToL HG002.B10M; do
   ln -s ${dir}/SPA-C/${dir}.out.fa ${dir}/fasta.out/SPA-C.fa
 done
 ```
+
+## Figures
+In order to reproduce figures, first start Jupyter Lab with the development environment:
+```shell
+apps="apptainer" # Directory of apptainer images
+SPA_dir="SPA-C" # Directory of the Git
+
+cd ${SPA_dir}/paper/Figures
+apptainer exec --cleanenv --nv $apps/LENV.sif jupyter lab --port 8888
+```
