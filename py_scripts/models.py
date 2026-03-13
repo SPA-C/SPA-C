@@ -399,7 +399,7 @@ class SPAC:
                 else:
                     z = self.model(x)
 
-                loss = criterion(z.squeeze(), y)
+                loss = criterion(z.squeeze(), y.float())
                 loss_list.append(loss.item())
 
                 if not val:
