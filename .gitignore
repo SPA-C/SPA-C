@@ -1,0 +1,7 @@
+# Default ignored files
+.idea/
+*.json
+**/.ipynb_checkpoints/
+*.png
+model_training/SPA-C/
+paper/Figures/*.csv

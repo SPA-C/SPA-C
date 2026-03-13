@@ -68,7 +68,7 @@ hicBuildMatrix \
 
 ### Correcting and scaffolding an assembly
 Modify paths in the script [run_SPA-C.sh](run_SPA-C.sh) according to your configuration and run it.
-
+Model's weights are located in the [weights](weights) folder.
 
 ### Outputs
 SPA-C generates several outputs that can be used to understand the choices that have been made:
