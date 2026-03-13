@@ -1,9 +1,13 @@
 
 \documentclass[border=8pt, multi, tikz]{standalone} 
 \usepackage{import}
-\subimport{../layers/}{init}
+\subimport{tikzlayers/}{init}
 \usetikzlibrary{positioning}
 \usetikzlibrary{3d, fit, calc} %for including external image
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage{sansmathfonts}
 
 \def\ConvColor{rgb:yellow,5;red,2.5;white,5}
 \def\ConvReluColor{rgb:yellow,5;red,5;white,5}
@@ -18,11 +22,11 @@
 \newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
 
 \begin{document}
-\begin{tikzpicture}[font=\LARGE]
+\begin{tikzpicture}[every node/.style={font=\fontsize{22}{22}\selectfont}]
 \tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
 \tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
 
-\node[canvas is zy plane at x=0] (temp) at (-3,0,0) {\includegraphics[width=8cm,height=8cm]{/home/amergez/Documents/Git/PlotNeuralNet/pyexamples/CTG_1_example.png}};
+\node[canvas is zy plane at x=0] (temp) at (-3,0,0) {\includegraphics[width=8cm,height=8cm]{CTG_1_example.png}};
 
 \pic[shift={(0,0,0)}] at (0,0,0) 
     {Box={
@@ -257,10 +261,10 @@
     -- cycle;
 \node[align=center] at (14, -5, 0) {
     \textbf{ResNeXt blocks $\times$3}\\
-    Cardinality = 4\\
-    Filters = [32, 64, 64]\\
-    Output size = [10$\times$10, 10$\times$10, 5$\times$5]\\
-    Kernel size = 3$\times$3
+    Cardinality: 4\\
+    Filters: [32, 64, 64]\\
+    Output size: [10$\times$10, 10$\times$10, 5$\times$5]\\
+    Kernel size: 3$\times$3
 };
 
 \end{tikzpicture}
