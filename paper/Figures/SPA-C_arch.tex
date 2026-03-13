@@ -3,7 +3,7 @@
 \usepackage{import}
 \subimport{../layers/}{init}
 \usetikzlibrary{positioning}
-\usetikzlibrary{3d} %for including external image 
+\usetikzlibrary{3d, fit, calc} %for including external image
 
 \def\ConvColor{rgb:yellow,5;red,2.5;white,5}
 \def\ConvReluColor{rgb:yellow,5;red,5;white,5}
@@ -18,7 +18,7 @@
 \newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
 
 \begin{document}
-\begin{tikzpicture}
+\begin{tikzpicture}[font=\LARGE]
 \tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
 \tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
 
@@ -29,7 +29,7 @@
         name=conv1,
         caption= ,
         xlabel={{16, }},
-        zlabel=20,
+        zlabel=,
         fill=\ConvColor,
         height=40,
         width=4,
@@ -69,7 +69,7 @@
         fill=\SumColor,
         opacity=1,
         radius=1.5,
-        logo=$+$
+        logo=
         }
     };
 
@@ -231,7 +231,7 @@
 \pic[shift={ (1,0,0) }] at (resnext1_sum-east) 
     {Box={
         name=AvgPool,
-        caption=AvgPool,
+        caption=,
         xlabel={{64, }},
         fill=\PoolColor,
         opacity=0.5,
@@ -242,6 +242,26 @@
     };
 
 \draw [connection]  (resnext1_sum-east)    -- node {\midarrow} (AvgPool-west);
+\draw[dashed, thick, rounded corners, black, opacity=1]
+    % Bottom-back corner of the box (x,y,z)
+    (-1,-11,-10)
+    % Forward in x (width)
+    -- (15.5,-11,-10)
+    % Up in y (height)
+    -- (15.5,7.5,-10)
+    % Back in x
+    -- (-1,7.5,-10)
+    % Down in y
+    -- (-1,-11,-10)
+    % Return in depth (z)
+    -- cycle;
+\node[align=center] at (14, -5, 0) {
+    \textbf{ResNeXt blocks $\times$3}\\
+    Cardinality = 4\\
+    Filters = [32, 64, 64]\\
+    Output size = [10$\times$10, 10$\times$10, 5$\times$5]\\
+    Kernel size = 3$\times$3
+};
 
 \end{tikzpicture}
 \end{document}
