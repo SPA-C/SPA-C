@@ -106,11 +106,17 @@ done
 ```
 
 ## Figures
-In order to reproduce figures, first start Jupyter Lab with the development environment:
+In order to reproduce figures with notebooks, first start Jupyter Lab with the development environment:
 ```shell
 apps="apptainer" # Directory of apptainer images
 SPA_dir="SPA-C" # Directory of the Git
 
 cd ${SPA_dir}/paper/Figures
 apptainer exec --cleanenv --nv $apps/LENV.sif jupyter lab --port 8888
+```
+
+The architecture figure was made using the [PlotNeuralNet](https://github.com/HarisIqbal88/PlotNeuralNet) package, with slight modification to the layers.
+To generate the figure, install the environment as explained in the package repository and run this snippet in the `Figures` directory:
+```shell
+pdflatex SPA-C_arch.tex
 ```
