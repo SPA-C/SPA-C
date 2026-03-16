@@ -5,7 +5,7 @@ SPA-C is a CNN based tool to correct and scaffold assemblies.
 ## Installation
 Clone this repo to your desired location :
 ```shell
-git clone https://forge.inrae.fr/spa-c/SPA-C.git
+git clone https://github.com/SPA-C/SPA-C.git
 ```
 
 Download the apptainer image containing the environment to run the tool (see its [Repo](https://forge.inrae.fr/SPA-C/env)) :
@@ -67,8 +67,20 @@ hicBuildMatrix \
 > If you use our Apptainer image, run: `apptainer exec HiC.sif hicBuildMatrix [...]` instead of `hicBuildMatrix [...]`.
 
 ### Correcting and scaffolding an assembly
-Modify paths in the script [run_SPA-C.sh](run_SPA-C.sh) according to your configuration and run it.
-Model's weights are located in the [weights](weights) folder.
+Use the script [run_SPA-C.sh](run_SPA-C.sh) according to run SPA-C. Model's weights are located in the [weights](weights) folder.
+```shell
+Usage: run_SPA-C.sh [options]
+
+Options:
+  -A <dir>                Directory of apptainer images
+  -S <dir>                Directory of SPA-C's scripts (py_scripts from the repo)
+  -W <file>.pth           Model's weights
+  -I <name>               Name of the genome (<name> in <name>.fa)
+  -F <file>.fa            Assembly to scaffold (FASTA)
+  -M <file>.mcool         Hi-C matrices from HicExplorer (MCOOL)
+  -L <file>.longdust      Path to longdust predictions (will be generated if not found)
+  -C <file>.chrom.sizes   Path to the chrom sizes file (will be generated if not found)
+```
 
 ### Outputs
 SPA-C generates several outputs that can be used to understand the choices that have been made:

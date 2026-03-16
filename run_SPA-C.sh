@@ -16,6 +16,52 @@ LD="../references/${ID}.longdust" # Path to Longdust predictions (default is whe
 
 CS="${FA}.chrom.sizes" # Path to chromosome size
 
+# USAGE
+usage() {
+    printf "Usage: %s [options]\n\nOptions:\n" "$0"
+    printf "  %-20s %s\n" \
+        "-A <dir>"  "Directory of apptainer images" \
+        "-S <dir>"  "Directory of SPA-C's scripts (py_scripts from the repo)" \
+        "-W <file>.pth"  "Model's weights" \
+        "-I"  "Name of the genome (<name> in <name>.fa)" \
+        "-F <file>.fa"  "Assembly to scaffold (FASTA)" \
+        "-M <file>.mcool" "Hi-C matrices from HicExplorer (MCOOL)" \
+        "-L <file>.longdust"  "Path to longdust predictions (will be generated if not found)" \
+        "-C <file>.chrom.sizes"  "Path to the chrom sizes file (will be generated if not found)"
+}
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [options]
+
+Options:
+  -A <dir>                Directory of apptainer images
+  -S <dir>                Directory of SPA-C's scripts (py_scripts from the repo)
+  -W <file>.pth           Model's weights
+  -I <name>               Name of the genome (<name> in <name>.fa)
+  -F <file>.fa            Assembly to scaffold (FASTA)
+  -M <file>.mcool         Hi-C matrices from HicExplorer (MCOOL)
+  -L <file>.longdust      Path to longdust predictions (will be generated if not found)
+  -C <file>.chrom.sizes   Path to the chrom sizes file (will be generated if not found)
+
+EOF
+}
+
+while getopts "A:S:W:I:F:M:L:C" option; do
+  case "$option" in
+    A) apps="$OPTARG";;
+    S) scripts="$OPTARG";;
+    W) weights="$OPTARG";;
+    I) ID="$OPTARG";;
+    F) FA="$OPTARG";;
+    M) MCOOL="$OPTARG";;
+    L) LD="$OPTARG";;
+    C) CS="$OPTARG";;
+    \?) usage; exit 1;;
+  esac
+done
+
+
 mkdir tmp
 
 # Main
