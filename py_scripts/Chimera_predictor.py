@@ -1,5 +1,5 @@
 """
-Chimera predictor script for DLScaff
+Chimera predictor script for SPA-C
 
 @author: alexis.mergez@inrae.fr
 @version: 0.11.0
@@ -9,7 +9,7 @@ Chimera predictor script for DLScaff
 import os
 from torch.utils.data import DataLoader
 from SPAC_Dataset import dataset
-from models import DLScaff
+from models import SPAC
 import json
 from tqdm import tqdm
 import argparse
@@ -39,7 +39,7 @@ print(f"Using {device} device")
 
 # Variables ------------------------------------------------------------------------------------------------------------
 argParser = argparse.ArgumentParser(
-    description= f"DLScaff chimeric contig predictor - v{version}"
+    description= f"SPA-C chimeric contig predictor - v{version}"
     )
 argParser.add_argument(
     "--dir",
@@ -119,9 +119,9 @@ bin_size = args.bin_size
 n_workers = args.threads
 
 # Loading model --------------------------------------------------------------------------------------------------------
-model = DLScaff(
+model = SPAC(
     device=device,
-    name="DLScaff",
+    name="SPA-C",
     latent_width=latent_width,
     input_shape=(1, 20, 20),
     weights=model_weights

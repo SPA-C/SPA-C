@@ -1,5 +1,5 @@
 """
-Scaffold predictor script for DLScaff
+Scaffold predictor script for SPA-C
 
 @author: alexis.mergez@inrae.fr
 @version: 0.8
@@ -9,7 +9,7 @@ Scaffold predictor script for DLScaff
 import os
 from torch.utils.data import DataLoader
 from SPAC_Dataset import dataset
-from models import DLScaff
+from models import SPAC
 import json
 import torch
 from tqdm import tqdm
@@ -40,7 +40,7 @@ print(f"Using {device} device")
 
 # Variables ------------------------------------------------------------------------------------------------------------
 argParser = argparse.ArgumentParser(
-    description= f"DLScaff chimeric contig predictor - v{version}"
+    description= f"SPA-C chimeric contig predictor - v{version}"
     )
 argParser.add_argument(
     "--dir",
@@ -112,9 +112,9 @@ if args.gfa_dir is None: gfa_dir = os.path.join(main_dir, "scaffolds.gfa")
 else: gfa_dir = args.gfa_dir
 
 # Loading model --------------------------------------------------------------------------------------------------------
-model = DLScaff(
+model = SPAC(
     device=device,
-    name="DLScaff",
+    name="SPA-C",
     latent_width=latent_width,
     input_shape=(1, 20, 20),
     weights=model_weights
