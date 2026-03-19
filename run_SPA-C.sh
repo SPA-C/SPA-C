@@ -34,7 +34,7 @@ Options:
 EOF
 }
 
-while getopts "A:S:W:I:F:M:L:C" option; do
+while getopts "A:S:W:I:F:M:L:C:" option; do
   case "$option" in
     A) apps="$OPTARG";;
     S) scripts="$OPTARG";;
