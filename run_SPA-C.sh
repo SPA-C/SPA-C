@@ -81,7 +81,7 @@ apptainer exec --nv $apps/SPA-C.sif python -u ${scripts}/Chimera_predictor.py \
 
 # Creating scaffolding dataset
 echo "[SPA-C::main] Creating scaffolding dataset ..."
-apptainer exec $apps/HiC.sif python -u ${scripts}/Cool2InterM_FullMat.py \
+apptainer exec $apps/SPA-C.sif python -u ${scripts}/Cool2InterM_FullMat.py \
   --cool ${MCOOL} \
   --image-size 10 \
   --bin-size 5000 \
@@ -92,7 +92,7 @@ apptainer exec $apps/HiC.sif python -u ${scripts}/Cool2InterM_FullMat.py \
   --contigs nochim_ctgs.txt \
   --output ${ID}.inter.5k.hdf5
 
-apptainer exec $apps/HiC.sif python -u ${scripts}/Cool2InterM_FullMat.py \
+apptainer exec $apps/SPA-C.sif python -u ${scripts}/Cool2InterM_FullMat.py \
   --cool ${MCOOL} \
   --image-size 10 \
   --bin-size 25000 \

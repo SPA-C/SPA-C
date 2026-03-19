@@ -8,7 +8,7 @@ Clone this repo to your desired location :
 git clone https://github.com/SPA-C/SPA-C.git
 ```
 
-Download the apptainer image containing the environment to run the tool (see its [Repo](https://forge.inrae.fr/SPA-C/env)) :
+Download the apptainer images containing the environments to run the tool (see its [Repo](https://forge.inrae.fr/SPA-C/env)) :
 ```shell
 apptainer pull SPA-C.sif oras://registry.forge.inrae.fr/spa-c/env/spac:latest
 ```
@@ -79,7 +79,7 @@ Options:
   -F <file>.fa            Assembly to scaffold (FASTA)
   -M <file>.mcool         Hi-C matrices from HicExplorer (MCOOL)
   -L <file>.longdust      Path to longdust predictions (will be generated if not found)
-  -C <file>.chrom.sizes   Path to the chrom sizes file (will be generated if not found)
+  -C <file>.chrom.sizes   Path to the chrom sizes file
 ```
 
 ### Outputs
