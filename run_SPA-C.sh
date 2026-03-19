@@ -18,19 +18,6 @@ CS="${FA}.chrom.sizes" # Path to chromosome size
 
 # USAGE
 usage() {
-    printf "Usage: %s [options]\n\nOptions:\n" "$0"
-    printf "  %-20s %s\n" \
-        "-A <dir>"  "Directory of apptainer images" \
-        "-S <dir>"  "Directory of SPA-C's scripts (py_scripts from the repo)" \
-        "-W <file>.pth"  "Model's weights" \
-        "-I"  "Name of the genome (<name> in <name>.fa)" \
-        "-F <file>.fa"  "Assembly to scaffold (FASTA)" \
-        "-M <file>.mcool" "Hi-C matrices from HicExplorer (MCOOL)" \
-        "-L <file>.longdust"  "Path to longdust predictions (will be generated if not found)" \
-        "-C <file>.chrom.sizes"  "Path to the chrom sizes file (will be generated if not found)"
-}
-
-usage() {
     cat <<EOF
 Usage: $(basename "$0") [options]
 
@@ -42,7 +29,7 @@ Options:
   -F <file>.fa            Assembly to scaffold (FASTA)
   -M <file>.mcool         Hi-C matrices from HicExplorer (MCOOL)
   -L <file>.longdust      Path to longdust predictions (will be generated if not found)
-  -C <file>.chrom.sizes   Path to the chrom sizes file (will be generated if not found)
+  -C <file>.chrom.sizes   Path to the chrom sizes file
 
 EOF
 }

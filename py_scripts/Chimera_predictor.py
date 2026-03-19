@@ -8,7 +8,7 @@ Chimera predictor script for DLScaff
 # Librairies -----------------------------------------------------------------------------------------------------------
 import os
 from torch.utils.data import DataLoader
-from DLScaffDataset import dataset
+from SPAC_Dataset import dataset
 from models import DLScaff
 import json
 from tqdm import tqdm
