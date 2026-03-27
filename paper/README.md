@@ -37,12 +37,21 @@ done
 Using the [run_SPA-C.sh](../run_SPA-C.sh) template, SPA-C is run for all datasets using:
 ```shell
 SPA_dir="SPA-C" # Directory of the Git repo
+apps="apptainer"
+
 for dir in *.DToL HG002.B10M; do
   mkdir ${dir}/SPA-C
-  cat ${SPA_dir}/run_SPA-C.sh | sed "s/GenomeID/${dir}/g" > ${dir}/SPA-C/run_SPA-C.sh
+  ${SPA_dir}/run_SPA-C.sh \
+    -A $apps \
+    -S $SPA_dir/py_scripts \
+    -W $SPA_dir/weights/SPA-C_weights.pth \
+    -I $dir \
+    -F ${dir}/references/${dir}.fa \
+    -M ${dir}/aligned/${dir}.JHE.mcool \
+    -L ${dir}/aligned/${dir}.longdust \
+    -C ${dir}/references/${dir}.chrom.sizes
 done
 ```
-Run each script to get the scaffolded FASTA.
 
 ### Running YaHS
 > [!note] This script should be run in the juicer directory.
@@ -106,6 +115,11 @@ done
 ```
 
 ## Figures
+> [!note] The development environment is retrievable using:
+> ```shell
+> apptainer pull LENV.sif oras://registry.forge.inrae.fr/alexis.mergez/lenv/lenv:latest
+> ```
+
 In order to reproduce figures with notebooks, first start Jupyter Lab with the development environment:
 ```shell
 apps="apptainer" # Directory of apptainer images

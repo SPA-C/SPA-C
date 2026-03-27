@@ -104,3 +104,21 @@ SPA-C generates several outputs that can be used to understand the choices that 
   - `<ID>.out.fa` is the final scaffolded assembly.
 - Datasets:
   - All HDF5 files are datasets used by SPA-C's model for prediction.
+
+## Working example
+Download the archive from the Zenodo repository and head to the `example` folder.
+After downloading the apptainer images and cloning the git repository, run the following command in the `example` command :
+```shell
+SPA_dir="SPA-C"
+apps="apptainer"
+
+${SPA_dir}/run_SPA-C.sh \
+  -A $apps \
+  -S $SPA_dir/py_scripts \
+  -W $SPA_dir/weights/SPA-C_weights.pth \
+  -I "AT.DToL" \
+  -F AT.DToL.fa \
+  -M AT.DToL.JHE.mcool \
+  -L AT.DToL.longdust \
+  -C AT.DToL.fa.chrom.sizes
+```
