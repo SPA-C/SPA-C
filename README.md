@@ -1,4 +1,5 @@
-# SPA-C
+# SPA-C: Scaffolding Pipeline for genome Assembly using deep-learning and hi-C
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19000362.svg)](https://doi.org/10.5281/zenodo.19000362)
 
 SPA-C is a CNN based tool to correct and scaffold assemblies.
 
@@ -122,3 +123,6 @@ ${SPA_dir}/run_SPA-C.sh \
   -L AT.DToL.longdust \
   -C AT.DToL.fa.chrom.sizes
 ```
+
+# Citation
+Mergez A, Mourad R, Hernandez-Raquet G, Zytnicki M. SPA-C: an hybrid tool to accurately scaffold genomes using Hi-C and Deep-Learning. bioRxiv. 2026. doi:10.64898/2026.06.16.732382
