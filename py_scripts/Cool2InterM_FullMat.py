@@ -530,7 +530,7 @@ def create_inter_contig_dataset(
                 bin_size=bin_size,
                 mat=mat,
                 contig1=contig1,
-                contig1=contig2,
+                contig2=contig2,
                 offsets=offsets,
                 threshold=threshold,
                 steps=steps
