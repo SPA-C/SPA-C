@@ -5,8 +5,8 @@ Cool to Inter-Contig matrices
 Create the dataset for scaffolding using corrected contigs.
 
 @author: Alexis Mergez
-@Last modified: 2025/12/17
-@version: 1.11
+@Last modified: 2026/11/05
+@version: 1.12
 """
 
 import os
@@ -24,7 +24,7 @@ import cProfile
 from tqdm import tqdm
 from numpy.lib.stride_tricks import as_strided
 
-version = "1.11"
+version = "1.12"
 
 #%% Functions
 def parse_corrected_contigs(
