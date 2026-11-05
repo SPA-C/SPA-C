@@ -296,8 +296,8 @@ def import_inter_matrices_hotspot(
         image_size: int,
         bin_size: int,
         mat: cooler.Cooler.matrix,
-        ctg1: str,
-        ctg2: str,
+        contig1: str,
+        contig2: str,
         offsets: dict,
         threshold: int = None,
         steps: int = 1
@@ -307,8 +307,8 @@ def import_inter_matrices_hotspot(
     but search for counts hotspots within the whole adjacency matrix.
 
     Inputs:
-        - ctg1 : str. Contig1 name.
-        - ctg2 : str. Contig2 name.
+        - contig1 : str. Contig1 name.
+        - contig2 : str. Contig2 name.
         - cool : cool_object. Whole HiC matrix opened wih cooler.
         - image_size : int. Width of the image (same as height).
         - bin_size : int. Pixel resolution of the HiC matrix.
@@ -328,13 +328,17 @@ def import_inter_matrices_hotspot(
     #    (ctg1, None, None),
     #    (ctg2, None, None)
     #)
+
+    ctg1, start1, end1 = re.split(r'-|:', contig1)
+    ctg2, start2, end2 = re.split(r'-|:', contig2)
+
     # Start and end bins for each contig
     s1, e1 = offsets[ctg1]
     s2, e2 = offsets[ctg2]
     whole_mat = mat[s1:e1, s2:e2].toarray().astype(np.int32)
 
     # First search with big patches
-    big_patches = strideConv(whole_mat.astype(np.int32), np.ones((stride, stride)), stride)
+    big_patches = strideConv(whole_mat, np.ones((stride, stride)), stride)
     bigP_idx = np.where(big_patches >= np.max(big_patches) / 2)
 
     selected_patches = []
