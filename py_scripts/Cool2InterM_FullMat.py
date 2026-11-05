@@ -298,6 +298,7 @@ def import_inter_matrices_hotspot(
         mat: cooler.Cooler.matrix,
         ctg1: str,
         ctg2: str,
+        offsets: dict,
         threshold: int = None,
         steps: int = 1
     ):
@@ -322,10 +323,15 @@ def import_inter_matrices_hotspot(
     # Searching best subpatch to import
     stride = 1000
 
-    whole_mat = mat.fetch(  # Fetching whole adjencency matrix
-        (ctg1, None, None),
-        (ctg2, None, None)
-    )
+    # OLD
+    #whole_mat = mat.fetch(  # Fetching whole adjencency matrix
+    #    (ctg1, None, None),
+    #    (ctg2, None, None)
+    #)
+    # Start and end bins for each contig
+    s1, e1 = offsets[ctg1]
+    s2, e2 = offsets[ctg2]
+    whole_mat = mat[s1:e1, s2:e2].toarray().astype(np.int32)
 
     # First search with big patches
     big_patches = strideConv(whole_mat.astype(np.int32), np.ones((stride, stride)), stride)
@@ -357,15 +363,25 @@ def import_inter_matrices_hotspot(
 
                 try:  # Fetching diagonals
                     if (ctg1, x) not in diags:
-                        diags[(ctg1, x)] = cool.matrix(balance=False).fetch(
-                            (ctg1, x * bin_size, (x + image_size) * bin_size),
-                            (ctg1, x * bin_size, (x + image_size) * bin_size),
-                        )
+                        diags[(ctg1, x)] = mat[
+                            s1 + x: s1 + x + image_size,
+                            s1 + x: s1 + x + image_size
+                        ].toarray()
+                        # OLD
+                        #diags[(ctg1, x)] = cool.matrix(balance=False).fetch(
+                        #    (ctg1, x * bin_size, (x + image_size) * bin_size),
+                        #    (ctg1, x * bin_size, (x + image_size) * bin_size),
+                        #)
                     if (ctg2, y) not in diags:
-                        diags[(ctg2, y)] = cool.matrix(balance=False).fetch(
-                            (ctg2, y * bin_size, (y + image_size) * bin_size),
-                            (ctg2, y * bin_size, (y + image_size) * bin_size),
-                        )
+                        diags[(ctg2, y)] = mat[
+                            s2 + y: s2 + y + image_size,
+                            s2 + y: s2 + y + image_size
+                        ].toarray()
+                        # OLD
+                        #diags[(ctg2, y)] = cool.matrix(balance=False).fetch(
+                        #    (ctg2, y * bin_size, (y + image_size) * bin_size),
+                        #    (ctg2, y * bin_size, (y + image_size) * bin_size),
+                        #)
                 except:
                     continue
 
@@ -511,6 +527,7 @@ def create_inter_contig_dataset(
                 mat=mat,
                 ctg1=contig1,
                 ctg2=contig2,
+                offsets=offsets,
                 threshold=threshold,
                 steps=steps
             )
