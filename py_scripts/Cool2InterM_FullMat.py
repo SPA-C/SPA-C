@@ -529,8 +529,8 @@ def create_inter_contig_dataset(
                 image_size=image_size,
                 bin_size=bin_size,
                 mat=mat,
-                ctg1=contig1,
-                ctg2=contig2,
+                contig1=contig1,
+                contig1=contig2,
                 offsets=offsets,
                 threshold=threshold,
                 steps=steps
