@@ -336,9 +336,9 @@ def import_inter_matrices_hotspot(
 
     # Start and end bins for each contig
     s1 = offsets[ctg1]
-    e1 = s1 + chrom_sizes[ctg1]
+    e1 = s1 + chrom_sizes[ctg1]//bin_size
     s2 = offsets[ctg2]
-    e2 = s2 + chrom_sizes[ctg2]
+    e2 = s2 + chrom_sizes[ctg2]//bin_size
     # DEBUG
     print(f"CTG1: {ctg1}:{s1}-{e1}, CTG2: {ctg2}:{s2}-{e2}")
 
