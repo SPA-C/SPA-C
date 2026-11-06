@@ -300,7 +300,8 @@ def import_inter_matrices_hotspot(
         contig2: str,
         offsets: dict,
         threshold: int = None,
-        steps: int = 1
+        steps: int = 1,
+        chrom_sizes: dict
     ):
     """
     Import inter-contig matrices for the 2 given contigs,
@@ -329,12 +330,15 @@ def import_inter_matrices_hotspot(
     #    (ctg2, None, None)
     #)
 
-    ctg1, start1, end1 = re.split(r'-|:', contig1)
-    ctg2, start2, end2 = re.split(r'-|:', contig2)
+    # We get full contigs, i.e. without a start-end position
+    ctg1 = contig1
+    ctg2 = contig2
 
     # Start and end bins for each contig
-    s1, e1 = offsets[ctg1]
-    s2, e2 = offsets[ctg2]
+    s1 = offsets[ctg1]
+    e1 = s1 + chrom_sizes[ctg1]
+    s2 = offsets[ctg2]
+    e2 = s2 + chrom_sizes[ctg2]
     whole_mat = mat[s1:e1, s2:e2].toarray().astype(np.int32)
 
     # First search with big patches
@@ -533,7 +537,8 @@ def create_inter_contig_dataset(
                 contig2=contig2,
                 offsets=offsets,
                 threshold=threshold,
-                steps=steps
+                steps=steps,
+                chrom_sizes=chrom_sizes
             )
 
         else: # Importing sampled positions
