@@ -340,12 +340,12 @@ def import_inter_matrices_hotspot(
     s2 = offsets[ctg2]
     e2 = s2 + chrom_sizes[ctg2]//bin_size
     # DEBUG
-    print(f"CTG1: {ctg1}:{s1}-{e1}, CTG2: {ctg2}:{s2}-{e2}")
+    #print(f"CTG1: {ctg1}:{s1}-{e1}, CTG2: {ctg2}:{s2}-{e2}")
 
     whole_mat = mat[s1:e1, s2:e2].toarray().astype(np.int32)
 
     #DEBUG
-    print("Shape : ", whole_mat.shape)
+    #print("Shape : ", whole_mat.shape)
 
     # First search with big patches
     big_patches = strideConv(whole_mat, np.ones((stride, stride)), stride)
