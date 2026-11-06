@@ -341,6 +341,9 @@ def import_inter_matrices_hotspot(
     e2 = s2 + chrom_sizes[ctg2]
     whole_mat = mat[s1:e1, s2:e2].toarray().astype(np.int32)
 
+    #DEBUG
+    print("Shape : ", whole_mat.shape)
+
     # First search with big patches
     big_patches = strideConv(whole_mat, np.ones((stride, stride)), stride)
     bigP_idx = np.where(big_patches >= np.max(big_patches) / 2)
