@@ -339,6 +339,9 @@ def import_inter_matrices_hotspot(
     e1 = s1 + chrom_sizes[ctg1]
     s2 = offsets[ctg2]
     e2 = s2 + chrom_sizes[ctg2]
+    # DEBUG
+    print(f"CTG1: {ctg1}:{s1}-{e1}, CTG2: {ctg2}:{s2}-{e2}")
+
     whole_mat = mat[s1:e1, s2:e2].toarray().astype(np.int32)
 
     #DEBUG
