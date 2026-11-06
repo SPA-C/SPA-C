@@ -299,9 +299,9 @@ def import_inter_matrices_hotspot(
         contig1: str,
         contig2: str,
         offsets: dict,
+        chrom_sizes: dict,
         threshold: int = None,
-        steps: int = 1,
-        chrom_sizes: dict
+        steps: int = 1
     ):
     """
     Import inter-contig matrices for the 2 given contigs,
