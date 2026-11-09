@@ -6,7 +6,7 @@ Create the dataset for scaffolding using corrected contigs.
 
 @author: Alexis Mergez
 @Last modified: 2026/11/09
-@version: 1.13.1a
+@version: 1.13.1b
 """
 
 import os
@@ -24,7 +24,7 @@ import cProfile
 from tqdm import tqdm
 from numpy.lib.stride_tricks import as_strided
 
-version = "1.13.1a"
+version = "1.13.1b"
 
 #%% Functions
 def parse_corrected_contigs(
@@ -536,6 +536,7 @@ def create_inter_contig_dataset(
     data = {}
     all_x, all_names, all_groups, filenames = [], [], [], []
     group_max = 0
+    group_table = {"Train": 0, "Val": 1, "Test": 2}
 
     # Write buffers
     BATCH = 12000
@@ -587,8 +588,13 @@ def create_inter_contig_dataset(
                 buffer_x.clear()
                 buffer_names.clear()
 
-            all_groups += [group_max]*len(x)
-            group_max += 1
+            if seq2split is not None:
+                all_groups.extend([
+                    group_table[mat_name.split("|")[-1]] for mat_name in names
+                ])
+            else:
+                all_groups += [group_max]*len(x)
+                group_max += 1
 
     # Reading temporary arrays
     for filename in filenames:

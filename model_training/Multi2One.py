@@ -4,7 +4,7 @@
 Multi2One tool for merging several SPA-C datasets
 
 @author: Alexis Mergez
-@version: 4.5
+@version: 4.6
 """
 
 import h5py
@@ -13,7 +13,7 @@ import argparse
 import datetime, time
 import os
 
-version = "4.5"
+version = "4.6"
 
 #%% Parsing arguments
 argParser = argparse.ArgumentParser(
@@ -108,7 +108,7 @@ for path in args.datasetPath:
                     
                     wholeData[imageSize][binSize]["groups"] = np.concatenate(
                         (wholeData[imageSize][binSize]["groups"], 
-                         np.array(inData[imageSize][binSize]["groups"])+np.max(wholeData[imageSize][binSize]["groups"])+1),
+                         np.array(inData[imageSize][binSize]["groups"])),
                         axis = 0)
         
         # Reading metadata
@@ -149,6 +149,6 @@ with h5py.File(args.outputDir, "w") as out:
     # Adding Multi2One metadata
     out.attrs["dataset"] = args.dataset_name
     out.attrs["Multi2One.version"] = version
-    out.attrs["Multi2One.creationDate"] = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S") 
+    out.attrs["Multi2One.creationDate"] = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
 
 print(f"Done ! ({round(time.time()-startTime,3)}s)")

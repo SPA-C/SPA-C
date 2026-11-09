@@ -4,8 +4,8 @@
 SPA-C dataset main method for working with datasets
 
 @author: Alexis Mergez
-@version: 5.7
-@Last modified: 2026/01/12
+@version: 5.8.1
+@Last modified: 2026/11/09
 """
 
 import os
@@ -53,7 +53,7 @@ class dataset():
         self.bin_size = bin_size
         self.isSplitted = False
         
-        self.version = "5.7"
+        self.version = "5.8.1"
         print(f"SPA-C dataset v{self.version}\n")
 
         self.load(skip_dataset=skip_dataset, skip_whole=skip_whole, skip_check=skip_check)
@@ -485,6 +485,35 @@ class dataset():
             plt.savefig(savedir)
         plt.show()
 
+    def split_by_group(self):
+        """
+        Updated method to split the dataset. It assumes that the group array contains the split information (0, 1, 2).
+
+        :return:
+        """
+        u_groups = np.unique(self.dataset["groups"])
+        if len(u_groups) != 3:
+            raise ValueError(f"Expected 3 groups, found {len(u_groups)}.")
+
+        # Train
+        mask = self.dataset["groups"] == 0
+        self.train = {
+            elem: self.dataset[elem][mask] for elem in self.dataset.keys()
+        }
+        # Val
+        mask = self.dataset["groups"] == 1
+        self.val = {
+            elem: self.dataset[elem][mask] for elem in self.dataset.keys()
+        }
+        # Test
+        mask = self.dataset["groups"] == 2
+        self.test = {
+            elem: self.dataset[elem][mask] for elem in self.dataset.keys()
+        }
+
+        self.isSplitted = True
+
+
     def _split_engine(self, class_indices, val_size, test_size, seed):
         from sklearn.model_selection import GroupShuffleSplit
 
@@ -505,7 +534,10 @@ class dataset():
         return class_indices[train_idx], class_indices[test_val_idx[val_idx]], class_indices[test_val_idx[test_idx]]
 
     def split(self, test_size=0.05, val_size=0.05, seed=42):
-
+        """
+        **DEPRECATED**
+        Splitting should be handled externally. See the paper.
+        """
         from sklearn.model_selection import GroupShuffleSplit
 
         np.random.seed(seed)

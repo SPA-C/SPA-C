@@ -5,8 +5,8 @@ Cool to Intra-Contig matrices
 Create the dataset for chimeric contig detection.
 
 @author: Alexis Mergez
-@Last modified: 2025/12/05
-@version: 1.8.1
+@Last modified: 2026/11/09
+@version: 1.9.1a
 """
 
 import os
@@ -19,7 +19,7 @@ import argparse
 import json
 from tqdm import tqdm
 
-version = "1.8.1"
+version = "1.9.1a"
 
 #%% Functions
 def parse_breakpoints(
@@ -100,7 +100,8 @@ def import_intra_matrices(
         breakpoints: dict=None,
         only_negatives: bool=False,
         name_dict: dict=None,
-        padding: int=None
+        padding: int=None,
+        seq2split: dict=None
     ):
     """
     Import intra-contig matrices for the 2 given contigs.
@@ -123,7 +124,10 @@ def import_intra_matrices(
     x, names, groups, y = [], [], [], []
 
     # Initializing UID variables
-    groupUID = 0
+    if seq2split is not None:
+        group_table = {"Train": 0, "Val": 1, "Test": 2}
+    else:
+        groupUID = 0
 
     # Fetching the array
     whole_array = cool.matrix(balance=False).fetch(
@@ -183,13 +187,18 @@ def import_intra_matrices(
                     else:
                         name = contig
 
-                    names.append(
-                        f"{name}_{pos}_{corner}"
-                    )
+                    if seq2split is not None:
+                        names.append(
+                            f"{name}_{pos}_{corner}|{seq2split[name]}"
+                        )
+                        groups.append(group_table[seq2split[name]]) # Group is set by the subset
+                    else:
+                        names.append(
+                            f"{name}_{pos}_{corner}"
+                        )
+                        groups.append(groupUID) # Group is set by the sequence
 
                     y.append(label)
-
-                    groups.append(groupUID)
 
     if len(x): # If even one matrix has been imported
         return x, y, names, groups
@@ -259,7 +268,8 @@ def create_intra_contig_dataset(
         breakpoints: dict=None,
         only_negatives: bool=False,
         name_dict: dict=None,
-        padding: int=None
+        padding: int=None,
+        seq2split: dict=None
     ):
     """
     Create the dataset of intra-contig matrices.
@@ -296,7 +306,8 @@ def create_intra_contig_dataset(
             breakpoints=breakpoints,
             only_negatives=only_negatives,
             name_dict=name_dict,
-            padding=padding
+            padding=padding,
+            seq2split=seq2split
         )
 
         # Appending all_x if not empty
@@ -384,7 +395,8 @@ def main(
         breakpoint_file: str=None,
         only_negatives: bool=False,
         name_table: str=None,
-        padding: int=None
+        padding: int=None,
+        splits_file: str=None
     ):
     """
     Main function to create the dataset, normalize it and output it to HDF5
@@ -417,6 +429,22 @@ def main(
 
     chrom_sizes = cool.chromsizes.to_dict()
 
+    # Reading splits if available
+    if splits_file is not None:
+        seq2split = {}
+        split2seqs = {}
+        with open(splits_file, "r") as handle:
+            for line in handle.readlines():
+                split, sequences = line.strip().split("\t")
+
+                for seq_name in sequences.split(","):
+                    seq2split[seq_name] = split
+
+                split2seqs[split] = sequences.split(",")
+    else:
+        split2seqs = None
+        seq2split = None
+
     # Parsing breakpoints
     if breakpoint_file is not None:
         breakpoints = parse_breakpoints(
@@ -440,7 +468,8 @@ def main(
         breakpoints=breakpoints,
         only_negatives=only_negatives,
         name_dict=name_dict,
-        padding=padding
+        padding=padding,
+        seq2split=seq2split
     )
 
     # Fetching whole matrices
@@ -461,7 +490,7 @@ def main(
         "data.type": "Intra.FullMat",
         "dataset": dataset_name,
         "Cool2IntraM_FullMat.filter": threshold if threshold is not None else "None",
-        "Cool2IntraM_FullMat.creation_date": datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
+        "Cool2IntraM_FullMat.creation_date": datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
     }
 
     export_to_HDF5(
@@ -518,6 +547,14 @@ if __name__ == '__main__':
         type = str
         )
     argParser.add_argument(
+        "--splits",
+        dest="splits_file",
+        required=False,
+        default=None,
+        help="Path to the TXT file containing the sequences in each split",
+        type=str
+    )
+    argParser.add_argument(
         "--breakpoint",
         dest="breakpoint_file",
         required=False,
@@ -558,5 +595,6 @@ if __name__ == '__main__':
         breakpoint_file = args.breakpoint_file,
         only_negatives = args.only_negatives,
         name_table=args.name_table,
-        padding=args.padding
+        padding=args.padding,
+        splits_file = args.splits_file
     )
