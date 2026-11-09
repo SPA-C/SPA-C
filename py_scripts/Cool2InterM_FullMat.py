@@ -5,8 +5,8 @@ Cool to Inter-Contig matrices
 Create the dataset for scaffolding using corrected contigs.
 
 @author: Alexis Mergez
-@Last modified: 2026/11/05
-@version: 1.12
+@Last modified: 2026/11/09
+@version: 1.13.1a
 """
 
 import os
@@ -24,7 +24,7 @@ import cProfile
 from tqdm import tqdm
 from numpy.lib.stride_tricks import as_strided
 
-version = "1.12"
+version = "1.13.1a"
 
 #%% Functions
 def parse_corrected_contigs(
@@ -301,7 +301,8 @@ def import_inter_matrices_hotspot(
         offsets: dict,
         chrom_sizes: dict,
         threshold: int = None,
-        steps: int = 1
+        steps: int = 1,
+        seq2split: dict = None,
     ):
     """
     Import inter-contig matrices for the 2 given contigs,
@@ -421,14 +422,24 @@ def import_inter_matrices_hotspot(
                             np.rot90(np.flip(fm, axis=1), -1)
                         )
 
-                        # Adding the name
-                        names.append(
-                            # Position equals 0 at the start of the contig, 1 at the end.
-                            f"{ctg1}:{x * bin_size}-{(x + image_size) * bin_size}|{ctg2}:{y * bin_size}-{(y + image_size) * bin_size}"
-                        )
-                        names.append(
-                            f"{ctg2}:{y * bin_size}-{(y + image_size) * bin_size}|{ctg1}:{x * bin_size}-{(x + image_size) * bin_size}"
-                        )
+                        if seq2split is None:
+                            # Adding the name
+                            names.append(
+                                # Position equals 0 at the start of the contig, 1 at the end.
+                                f"{ctg1}:{x * bin_size}-{(x + image_size) * bin_size}|{ctg2}:{y * bin_size}-{(y + image_size) * bin_size}"
+                            )
+                            names.append(
+                                f"{ctg2}:{y * bin_size}-{(y + image_size) * bin_size}|{ctg1}:{x * bin_size}-{(x + image_size) * bin_size}"
+                            )
+                        else:
+                            # Adding the name
+                            names.append(
+                                # Position equals 0 at the start of the contig, 1 at the end.
+                                f"{ctg1}:{x * bin_size}-{(x + image_size) * bin_size}|{ctg2}:{y * bin_size}-{(y + image_size) * bin_size}|{seq2split[ctg1]}"
+                            )
+                            names.append(
+                                f"{ctg2}:{y * bin_size}-{(y + image_size) * bin_size}|{ctg1}:{x * bin_size}-{(x + image_size) * bin_size}|{seq2split[ctg1]}"
+                            )
 
                 except Exception as inst:
                     # Skipping if unable to retrieve the matrix (may be due to too short contigs)
@@ -503,7 +514,8 @@ def create_inter_contig_dataset(
         hotspot: bool=True,
         tmp_dir: str=".",
         steps: int=1,
-        padding: int=-1
+        padding: int=-1,
+        seq2split: dict=None
     ):
     """
     Create the dataset of inter-contig matrices.
@@ -544,7 +556,8 @@ def create_inter_contig_dataset(
                 offsets=offsets,
                 threshold=threshold,
                 steps=steps,
-                chrom_sizes=chrom_sizes
+                chrom_sizes=chrom_sizes,
+                seq2split=seq2split
             )
 
         else: # Importing sampled positions
@@ -713,6 +726,7 @@ def main(
         output: str,
         threshold: int=None,
         chrom_file: str=None,
+        splits_file: str=None,
         contig_file: str=None,
         threads: int=1,
         steps: int=None,
@@ -779,6 +793,22 @@ def main(
             chrom_sizes=chrom_sizes
         )
 
+    # If splits were given
+    if splits_file is not None:
+        seq2split = {}
+        split2seqs = {}
+        with open(splits_file, "r") as handle:
+            for line in handle.readlines():
+                split, sequences = line.strip().split("\t")
+
+                for seq_name in sequences.split(","):
+                    seq2split[seq_name] = split
+
+                split2seqs[split] = sequences.split(",")
+    else:
+        split2seqs = None
+        seq2split = None
+
     # Making contig pairs
     if inference:
         contig_pairs = [
@@ -793,6 +823,7 @@ def main(
             for idA in range(len(contigs)-1)
             for idB in range(idA, len(contigs))
             if contigs[idA] != contigs[idB]
+            and (splits_file is None or seq2split[contigs[idA]] == seq2split[contigs[idB]]) # Checking if both contigs are parts of the same subset
             and (hotspot or steps is None or not is_contiguous(contigs[idA], contigs[idB]))
         ]
 
@@ -827,7 +858,8 @@ def main(
             steps=steps,
             padding=padding,
             chrom_sizes=chrom_sizes,
-            base_contigs=base_contigs
+            base_contigs=base_contigs,
+            seq2split=seq2split
         )
 
     else:
@@ -854,7 +886,8 @@ def main(
                         hotspot,
                         os.path.join(tmp_dir, f"split_{sub_list_id}"),
                         steps,
-                        padding
+                        padding,
+                        seq2split
                     )
                 )
 
@@ -886,7 +919,7 @@ def main(
         "data.type": "Inter.FullMat",
         "dataset": dataset_name,
         "Cool2InterM_FullMat.filter": threshold if threshold is not None else "None",
-        "Cool2InterM_FullMat.creation_date": datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
+        "Cool2InterM_FullMat.creation_date": datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
     }
 
     export_to_HDF5(
@@ -949,6 +982,14 @@ if __name__ == '__main__':
         help = "Output dataset (HDF5)",
         type = str
         )
+    argParser.add_argument(
+        "--splits",
+        dest="splits_file",
+        required=False,
+        default=None,
+        help="Path to the TXT file containing the sequences in each split",
+        type=str
+    )
     argParser.add_argument(
         "--threshold",
         dest="threshold",
@@ -1029,7 +1070,8 @@ if __name__ == '__main__':
             hotspot=args.hotspot,
             tmp_dir=args.tmp_dir,
             inference=args.inference,
-            padding=args.padding
+            padding=args.padding,
+            splits_file=args.splits_file,
         )
         profiler.disable()
         profiler.dump_stats(os.path.join(os.path.dirname(args.output),"Cool2Inter.prof"))
@@ -1048,5 +1090,6 @@ if __name__ == '__main__':
             hotspot = args.hotspot,
             tmp_dir = args.tmp_dir,
             inference = args.inference,
-            padding = args.padding
+            padding = args.padding,
+            splits_file=args.splits_file,
         )
