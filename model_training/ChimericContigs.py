@@ -5,7 +5,7 @@ Chimeric contig generator
 
 @author: Alexis Mergez
 @Last modified: 2025/11/09
-@version: 1.6.0
+@version: 1.6.1
 """
 
 import argparse
@@ -18,7 +18,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-version = "1.6.0"
+version = "1.6.1"
 
 #% Parsing arguments
 argParser = argparse.ArgumentParser(
@@ -269,7 +269,7 @@ for repetition in range(1, args.repetition+1):
                 if args.simple_names is None:
                     chimera_name = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{start_ctg2}-{start_ctg2+half_size}"
                 else:
-                    chimera_name = f"{args.simple_names}_{contig_uid}"
+                    chimera_name = f"{args.simple_names}_{contig_uid}_{seq2split[ctg1]}"
                     conversion_table[chimera_name] = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{start_ctg2}-{start_ctg2+half_size}"
                     contig_uid += 1
 
