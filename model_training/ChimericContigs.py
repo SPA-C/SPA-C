@@ -4,8 +4,8 @@
 Chimeric contig generator
 
 @author: Alexis Mergez
-@Last modified: 2025/11/25
-@version: 1.5.5
+@Last modified: 2025/11/09
+@version: 1.6.0
 """
 
 import argparse
@@ -18,7 +18,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-version = "1.5.5"
+version = "1.6.0"
 
 #% Parsing arguments
 argParser = argparse.ArgumentParser(
@@ -49,6 +49,14 @@ argParser.add_argument(
     type = str
     )
 argParser.add_argument(
+    "--splits",
+    dest = "splits_file",
+    required = False,
+    default = None,
+    help = "Path to the TXT file containing the sequences in each split",
+    type = str
+    )
+argParser.add_argument(
     "--seed",
     dest = "seed",
     default = None,
@@ -65,7 +73,7 @@ argParser.add_argument(
 argParser.add_argument(
     "--size",
     dest = "ctg_size",
-    default = 2000000, # 2Mb : image size of 50 with 49 bins (= 98 bin wide contigs) for sliding and 4 more for buffering contig ends, at bin size of 10000
+    default = 200000, # 0.2Mb = bin_size(5kb) * 40 bins
     help = "Contig size (Default : 200000)",
     type = int
     )
@@ -107,6 +115,22 @@ if args.unbalanced_inversion :
     args.intra = True
     args.inversion = True
 
+#% Reading splits if available
+if args.splits_file is not None:
+    seq2split = {}
+    split2seqs = {}
+    with open(args.splits_file, "r") as handle:
+        for line in handle.readlines():
+            split, sequences = line.strip().split("\t")
+            
+            for seq_name in sequences.split(","):
+                seq2split[seq_name] = split
+
+            split2seqs[split] = sequences.split(",")
+else:
+    split2seqs = None
+    seq2split = None
+
 #% Main
 half_size = args.ctg_size//2
 print(f"Chimeric contig generator - {version}")
@@ -119,38 +143,63 @@ Fasta = {
     }
 print("Done")
 
-ctg_names = [
-    ctg_name 
-    for ctg_name in Fasta.keys() 
-    if len(Fasta[ctg_name]) >= half_size
-]
-
-##% Generating chimeric contigs
+#% Generating chimeric contigs
 rng = np.random.default_rng(args.seed)
 
 ##% Generating available contig pairs
-rng.shuffle(ctg_names)
 
-if not args.intra:
-    # Only inter-chromosome chimeras
-    ctg_pairs = [
-        (ctg_names[A], ctg_names[B])
-        for A in range(len(ctg_names)-1)
-        for B in range(A+1, len(ctg_names))
-        if A != B
+all_ctg_names = [
+        ctg_name 
+        for ctg_name in Fasta.keys() 
+        if len(Fasta[ctg_name]) >= half_size
     ]
-else:
-    # Only intra-chromosome chimeras
-    ctg_pairs = [
-        (ctg_names[A], ctg_names[A])
-        for A in range(len(ctg_names))
-    ]
-rng.shuffle(ctg_pairs)
 
+if args.splits_file is None: # If no splits
+    
+    rng.shuffle(all_ctg_names)
+
+    if not args.intra:
+        # Only inter-chromosome chimeras
+        ctg_pairs = [
+            (all_ctg_names[A], all_ctg_names[B])
+            for A in range(len(all_ctg_names)-1)
+            for B in range(A+1, len(all_ctg_names))
+            if A != B
+        ]
+    else:
+        # Only intra-chromosome chimeras
+        ctg_pairs = [
+            (all_ctg_names[A], all_ctg_names[A])
+            for A in range(len(all_ctg_names))
+        ]
+    rng.shuffle(ctg_pairs)
+    
+else: # We have splits
+    ctg_pairs = []
+    for subset, ctg_names in split2seqs.items():
+        rng.shuffle(ctg_names)
+        
+        if not args.intra:
+            # Only inter-chromosome chimeras
+            ctg_pairs.extend([
+                (ctg_names[A], ctg_names[B])
+                for A in range(len(ctg_names)-1)
+                for B in range(A+1, len(ctg_names))
+                if A != B
+            ])
+        else:
+            # Only intra-chromosome chimeras
+            ctg_pairs.extend([
+                (ctg_names[A], ctg_names[A])
+                for A in range(len(ctg_names))
+            ])
+            
+    rng.shuffle(ctg_pairs)
+        
 ##% Listing available positions for each contig to prevent overlapping contigs
 ctg_pos = {
     ctg_name: list(range(0, len(Fasta[ctg_name])-half_size, half_size))
-    for ctg_name in ctg_names
+    for ctg_name in all_ctg_names
 }
 
 for key in ctg_pos.keys():
@@ -183,6 +232,8 @@ for repetition in range(1, args.repetition+1):
     for k in tqdm(range(len(ctg_pairs)), desc=f"Generating chimeras - Round {repetition}", disable = args.cluster, unit="pairs"):
         ctg1, ctg2 = ctg_pairs[k]
 
+        assert seq2split[ctg1] == seq2split[ctg2]
+
         if (len(ctg_pos[ctg1]) and len(ctg_pos[ctg2])): # checking if there are elements in both positions
             ## --- Selecting both starting positions ---
             start_ctg1 = ctg_pos[ctg1].pop()
@@ -207,7 +258,7 @@ for repetition in range(1, args.repetition+1):
                 if args.simple_names is None:
                     chimera_name = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{end2}-{start_ctg2}"
                 else:
-                    chimera_name = f"{args.simple_names}_{contig_uid}"
+                    chimera_name = f"{args.simple_names}_{contig_uid}_{seq2split[ctg1]}"
                     conversion_table[chimera_name] = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{end2}-{start_ctg2}"
                     contig_uid += 1
 
