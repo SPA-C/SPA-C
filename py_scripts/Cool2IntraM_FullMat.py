@@ -5,8 +5,8 @@ Cool to Intra-Contig matrices
 Create the dataset for chimeric contig detection.
 
 @author: Alexis Mergez
-@Last modified: 2026/11/09
-@version: 1.9.1a
+@Last modified: 2026/11/10
+@version: 1.9.1b
 """
 
 import os
@@ -19,7 +19,7 @@ import argparse
 import json
 from tqdm import tqdm
 
-version = "1.9.1a"
+version = "1.9.1b"
 
 #%% Functions
 def parse_breakpoints(
@@ -188,10 +188,11 @@ def import_intra_matrices(
                         name = contig
 
                     if seq2split is not None:
+                        subset = seq2split[name.split(":")[0]] # Taking the first sequence name as it should be one chromosome name.
                         names.append(
-                            f"{name}_{pos}_{corner}|{seq2split[name]}"
+                            f"{name}_{pos}_{corner}|{subset}"
                         )
-                        groups.append(group_table[seq2split[name]]) # Group is set by the subset
+                        groups.append(group_table[subset]) # Group is set by the subset
                     else:
                         names.append(
                             f"{name}_{pos}_{corner}"
