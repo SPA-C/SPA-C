@@ -6,7 +6,7 @@ Create the dataset for chimeric contig detection.
 
 @author: Alexis Mergez
 @Last modified: 2026/11/10
-@version: 1.9.1b
+@version: 1.9.1c
 """
 
 import os
@@ -19,7 +19,7 @@ import argparse
 import json
 from tqdm import tqdm
 
-version = "1.9.1b"
+version = "1.9.1c"
 
 #%% Functions
 def parse_breakpoints(
@@ -192,7 +192,8 @@ def import_intra_matrices(
                         names.append(
                             f"{name}_{pos}_{corner}|{subset}"
                         )
-                        groups.append(group_table[subset]) # Group is set by the subset
+                        groups.append( group_table[subset] ) # Group is set by the subset
+
                     else:
                         names.append(
                             f"{name}_{pos}_{corner}"
@@ -316,8 +317,9 @@ def create_intra_contig_dataset(
             all_x += x
             all_names += names
 
-            all_groups += [k+group_max+1 for k in groups]
-            group_max = np.max(all_groups)
+            if seq2split is None: # Shifting groups by the max seen if not splits.
+                all_groups += [k+group_max+1 for k in groups]
+                group_max = np.max(all_groups)
 
             all_y += y
 
@@ -432,6 +434,7 @@ def main(
 
     # Reading splits if available
     if splits_file is not None:
+        print("[C2Intra:Main] Reading SPLITS...")
         seq2split = {}
         split2seqs = {}
         with open(splits_file, "r") as handle:
@@ -448,6 +451,7 @@ def main(
 
     # Parsing breakpoints
     if breakpoint_file is not None:
+        print("[C2Intra:Main] Reading Breakpoints...")
         breakpoints = parse_breakpoints(
             breakpoint_file=breakpoint_file,
             bin_size=bin_size
@@ -456,10 +460,12 @@ def main(
 
     # Renaming contigs if necessary
     if name_table is not None:
+        print("[C2Intra:Main] Reading conversion table...")
         with open(name_table, "r") as handle:
             name_dict = {k.strip().split('\t')[0]: k.strip().split('\t')[1] for k in handle.readlines()}
     else: name_dict = None
 
+    print("[C2Intra:Main] Parsing matrices...")
     # Creating the dataset
     data = create_intra_contig_dataset(
         bin_size=bin_size,
@@ -474,6 +480,7 @@ def main(
     )
 
     # Fetching whole matrices
+    print("[C2Intra:Main] Parsing whole matrices...")
     whole_matrices = get_whole_matrices(
         cool=cool,
         chrom_names=list(chrom_sizes.keys())
@@ -494,6 +501,7 @@ def main(
         "Cool2IntraM_FullMat.creation_date": datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
     }
 
+    print("[C2Intra:Main] Exporting to HDF5...")
     export_to_HDF5(
         data=data,
         whole=whole_matrices,
@@ -501,7 +509,7 @@ def main(
         metadata=metadata
     )
 
-    print("Done !")
+    print("[C2Intra:Main] Done !")
 
 if __name__ == '__main__':
     #%% Parsing arguments
