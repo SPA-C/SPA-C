@@ -6,7 +6,7 @@ Create the dataset for chimeric contig detection.
 
 @author: Alexis Mergez
 @Last modified: 2026/11/10
-@version: 1.9.1c
+@version: 1.9.1d
 """
 
 import os
@@ -19,7 +19,7 @@ import argparse
 import json
 from tqdm import tqdm
 
-version = "1.9.1c"
+version = "1.9.1d"
 
 #%% Functions
 def parse_breakpoints(
@@ -320,6 +320,8 @@ def create_intra_contig_dataset(
             if seq2split is None: # Shifting groups by the max seen if not splits.
                 all_groups += [k+group_max+1 for k in groups]
                 group_max = np.max(all_groups)
+            else:
+                all_groups.extend(groups)
 
             all_y += y
 
