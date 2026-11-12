@@ -302,7 +302,7 @@ for repetition in range(1, args.repetition+1):
         else :
             pass
 
-    print(f"\tRound {repetition} : {len(out)} chimeric contigs in total, {sum([len(ctg_pos[ctg_name]) for ctg_name in ctg_names])} positions left.")
+    print(f"\tRound {repetition} : {len(out)} chimeric contigs in total, {sum([len(ctg_pos[ctg_name]) for ctg_name in all_ctg_names])} positions left.")
 
 ##% Writing to output
 print(f"Writing chimeras to {args.out_file}...")
