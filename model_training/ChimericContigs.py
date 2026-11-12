@@ -259,7 +259,10 @@ for repetition in range(1, args.repetition+1):
                 if args.simple_names is None:
                     chimera_name = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{end2}-{start_ctg2}"
                 else:
-                    chimera_name = f"{args.simple_names}_{contig_uid}_{seq2split[ctg1]}"
+                    if args.splits_file is not None:
+                        chimera_name = f"{args.simple_names}_{contig_uid}_{seq2split[ctg1]}"
+                    else:
+                        chimera_name = f"{args.simple_names}_{contig_uid}"
                     conversion_table[chimera_name] = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{end2}-{start_ctg2}"
                     contig_uid += 1
 
@@ -270,7 +273,10 @@ for repetition in range(1, args.repetition+1):
                 if args.simple_names is None:
                     chimera_name = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{start_ctg2}-{start_ctg2+half_size}"
                 else:
-                    chimera_name = f"{args.simple_names}_{contig_uid}_{seq2split[ctg1]}"
+                    if args.splits_file is not None:
+                        chimera_name = f"{args.simple_names}_{contig_uid}_{seq2split[ctg1]}"
+                    else:
+                        chimera_name = f"{args.simple_names}_{contig_uid}"
                     conversion_table[chimera_name] = f"{ctg1}:{start_ctg1}-{start_ctg1+half_size}|{ctg2}:{start_ctg2}-{start_ctg2+half_size}"
                     contig_uid += 1
 
