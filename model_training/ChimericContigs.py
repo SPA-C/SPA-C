@@ -4,8 +4,8 @@
 Chimeric contig generator
 
 @author: Alexis Mergez
-@Last modified: 2025/11/09
-@version: 1.6.1
+@Last modified: 2026/11/12
+@version: 1.6.2
 """
 
 import argparse
@@ -18,7 +18,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-version = "1.6.1"
+version = "1.6.2"
 
 #% Parsing arguments
 argParser = argparse.ArgumentParser(
@@ -232,7 +232,8 @@ for repetition in range(1, args.repetition+1):
     for k in tqdm(range(len(ctg_pairs)), desc=f"Generating chimeras - Round {repetition}", disable = args.cluster, unit="pairs"):
         ctg1, ctg2 = ctg_pairs[k]
 
-        assert seq2split[ctg1] == seq2split[ctg2]
+        if args.splits_file is not None:
+            assert seq2split[ctg1] == seq2split[ctg2]
 
         if (len(ctg_pos[ctg1]) and len(ctg_pos[ctg2])): # checking if there are elements in both positions
             ## --- Selecting both starting positions ---
