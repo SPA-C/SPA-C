@@ -2,7 +2,7 @@
 Chimera predictor script for SPA-C
 
 @author: alexis.mergez@inrae.fr
-@version: 0.12.2
+@version: 0.12.3
 """
 
 # Librairies -----------------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ latent_width = 64
 batch_size = 64
 n_workers = 1
 smoothing_window = 20 # Arbitrary set to window size
-version = "0.12.2"
+version = "0.12.3"
 
 # Optimisation de CuDNN
 torch.backends.cudnn.benchmark = True
@@ -354,10 +354,10 @@ for chrom in tqdm(sorted(list(intra_probs.keys())), desc=f"Cutting chromosomes..
         part_ids = list(filtered_ctg_parts[chrom].keys())
         start, end = filtered_ctg_parts[chrom][part_ids[k]]["range"]
 
-        if end - start < 20 and len(part_ids) > 1:
+        if end - start < 20 and len(part_ids) > 1 and filtered_ctg_parts[chrom][part_ids[k]]["chimeric"] == True:
             # In this case, we split the current part between the previous and next part if possible.
             if k not in [0, len(part_ids) - 1]:
-                if end-start <=3 and filtered_ctg_parts[chrom][part_ids[k]]["chimeric"] == True:
+                if end-start <=3:
                     # Removing spurious chimeric regions
                     filtered_ctg_parts[chrom][part_ids[k - 1]]["range"][1] = filtered_ctg_parts[chrom][part_ids[k + 1]]["range"][1]
                     del filtered_ctg_parts[chrom][part_ids[k+1]]
