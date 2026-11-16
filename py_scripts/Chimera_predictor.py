@@ -2,7 +2,7 @@
 Chimera predictor script for SPA-C
 
 @author: alexis.mergez@inrae.fr
-@version: 0.11.0
+@version: 0.12.1
 """
 
 # Librairies -----------------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ latent_width = 64
 batch_size = 64
 n_workers = 1
 smoothing_window = 20 # Arbitrary set to window size
-version = "0.11.0"
+version = "0.12.1"
 
 # Optimisation de CuDNN
 torch.backends.cudnn.benchmark = True
@@ -221,12 +221,12 @@ def smoothing_predictions(x, ctg_probs, window=smoothing_window):
 
     return mean_probs, smoothed_probs
 
-def compute_range(x, probs, threshold=args.threshold):
+def compute_range(x, probs, threshold=args.threshold, min_length=4):
     """
-    Two cases :
-    - The size of the chimeric region is greater than the minimal prediction size for scaffolding -> Considered as a new contig.
-    - Else -> We take the mean position as breakpoint for the whole contig.
-    """
+        Two cases :
+        - The size of the chimeric region is greater than the minimal prediction size for scaffolding -> Considered as a new contig.
+        - Else -> We take the mean position as breakpoint for the whole contig.
+        """
 
     in_keep = False
     current_range = None
@@ -258,8 +258,7 @@ def compute_range(x, probs, threshold=args.threshold):
             else:  # We were already in a keeping zone, so we update the last element of the list
                 current_range[-1] = bin_id
 
-        if (pred < threshold and curve[bin_id - 10] == 0) or bin_id == max(
-                x):  # We exit the keeping region or we are at the end anyway
+        if (pred < threshold and curve[bin_id - 10] == 0):  # We exit the keeping region
             in_keep = False
 
             if current_range is not None:  # We were in a keeping zone, so we exit it
@@ -279,6 +278,20 @@ def compute_range(x, probs, threshold=args.threshold):
                 current_bad_range = [bin_id, bin_id]
             else:
                 current_bad_range[-1] = bin_id
+
+        if bin_id == max(x):  # We are at the end
+            if in_keep:  # We were in a non-chimeric region
+                _ctg_parts[current_part_id] = {
+                    "chimeric": False,
+                    "range": [current_range[0], current_range[1]]
+                }
+            else:
+                _ctg_parts[current_part_id] = {
+                    "chimeric": True,
+                    "range": [current_bad_range[0], current_bad_range[1]]
+                }
+
+        # print(bin_id, pred, in_keep, current_range, current_bad_range, _ctg_parts)
 
     return _ctg_parts
 
@@ -344,8 +357,15 @@ for chrom in tqdm(sorted(list(intra_probs.keys())), desc=f"Cutting chromosomes..
         if end - start < 20 and len(part_ids) > 1:
             # In this case, we split the current part between the previous and next part if possible.
             if k not in [0, len(part_ids) - 1]:
-                filtered_ctg_parts[chrom][part_ids[k - 1]]["range"][1] = start + (end - start) // 2
-                filtered_ctg_parts[chrom][part_ids[k + 1]]["range"][0] = start + (end - start) // 2
+                if end-start <=3 and filtered_ctg_parts[chrom][part_ids[k]]["chimeric"] == True:
+                    # Removing spurious chimeric regions
+                    filtered_ctg_parts[chrom][part_ids[k - 1]]["range"][1] = filtered_ctg_parts[chrom][part_ids[k + 1]]["range"][1]
+                    del filtered_ctg_parts[chrom][part_ids[k]]
+                    del filtered_ctg_parts[chrom][part_ids[k+1]]
+
+                else:
+                    filtered_ctg_parts[chrom][part_ids[k - 1]]["range"][1] = (end + start) // 2
+                    filtered_ctg_parts[chrom][part_ids[k + 1]]["range"][0] = (end + start) // 2
 
             elif k == 0:  # Removing this part entirely because it is a tip and would produce unusable small contigs
                 filtered_ctg_parts[chrom][part_ids[k + 1]]["range"][0] = start

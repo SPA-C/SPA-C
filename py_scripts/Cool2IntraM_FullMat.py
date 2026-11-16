@@ -5,8 +5,8 @@ Cool to Intra-Contig matrices
 Create the dataset for chimeric contig detection.
 
 @author: Alexis Mergez
-@Last modified: 2026/11/10
-@version: 1.9.1d
+@Last modified: 2026/11/16
+@version: 1.9.2a
 """
 
 import os
@@ -19,7 +19,7 @@ import argparse
 import json
 from tqdm import tqdm
 
-version = "1.9.1d"
+version = "1.9.2a"
 
 #%% Functions
 def parse_breakpoints(
@@ -249,11 +249,11 @@ def get_y(
     Output:
         - Y label for the given position.
     """
-
     if contig_name in breakpoints.keys():
         # Checking each breakpoint bin (0 if not in the range, else 1)
         check = [
-            bkp_bin-image_size+tolerance <= position <= bkp_bin+image_size-tolerance
+            # +1 to account for shifting in bin position. (Matrix with name '21' is centered around bin 20 and 21).
+            (bkp_bin-image_size) + tolerance + 1 <= position <= (bkp_bin+image_size) - tolerance + 1
             for bkp_bin in breakpoints[contig_name]
         ]
 
