@@ -2,7 +2,7 @@
 Chimera predictor script for SPA-C
 
 @author: alexis.mergez@inrae.fr
-@version: 0.12.1
+@version: 0.12.2
 """
 
 # Librairies -----------------------------------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ latent_width = 64
 batch_size = 64
 n_workers = 1
 smoothing_window = 20 # Arbitrary set to window size
-version = "0.12.1"
+version = "0.12.2"
 
 # Optimisation de CuDNN
 torch.backends.cudnn.benchmark = True
@@ -360,7 +360,6 @@ for chrom in tqdm(sorted(list(intra_probs.keys())), desc=f"Cutting chromosomes..
                 if end-start <=3 and filtered_ctg_parts[chrom][part_ids[k]]["chimeric"] == True:
                     # Removing spurious chimeric regions
                     filtered_ctg_parts[chrom][part_ids[k - 1]]["range"][1] = filtered_ctg_parts[chrom][part_ids[k + 1]]["range"][1]
-                    del filtered_ctg_parts[chrom][part_ids[k]]
                     del filtered_ctg_parts[chrom][part_ids[k+1]]
 
                 else:
